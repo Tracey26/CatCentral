@@ -10,21 +10,14 @@
     {% include "components/navbar.html.jinja"%}
     <h1>Browse</h1>
 
-    <form class="container" action="/browse">
-      <div class="input-group mb-3">
-        <input type="text" name="query" class="form-control" placeholder="Search..." aria-label="Search" >
-        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
-      </div>
-    </form>
-
     <div class = "row">
     {% for item in products %}
      <div class="col-4">
         <div class="card ">
-          <img src="{{item['item']}}" class="card-img-top" alt="{{item['product_name']}}">
+          <img src="{{item['image_dir']}}" class="card-img-top" alt="{{item['product_name']}}">
           <div class="card-body">
               <h5 class="card-title">{{item["product_name"]}}</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <p class="card-text">${{item["price"]}}</p>
               <a href="#" class="btn btn-primary">Go somewhere</a>
           </div>
         </div>
