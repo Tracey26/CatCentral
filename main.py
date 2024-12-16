@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import pymysql
 from dynaconf import Dynaconf
 
@@ -62,3 +62,31 @@ def product_page(product_id):
 @app.route("/signin")
 def signin():
     return render_template("signin.html.jinja")
+
+@app.route("/signup",methods=["POST","GET"])
+def signup():
+    if request.method =="POST":
+        first_name = request.form["first_name"]
+        last_name = request.form["last_name"]
+        email = request.form["email"]
+        password = request.form["password"]
+        username = request.form["username"]
+        address = request.form["address"]
+        number = request.form["number"]
+        
+
+        conn = connect_db()
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO `Customer`
+                (`first_name`, `last_name`, `email`,`password`, `username`, `address`, `number`)
+            VALUES
+                ( '{first_name}', '{last_name}', '{email}', '{password}', '{username}');
+        """)
+        cursor.close()
+        return redirect("signin")  
+    return render_template("signup.html.jinja")
+    cursor.close()
+    conn.close()
