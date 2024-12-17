@@ -8,31 +8,44 @@
   </head>
   <body>
     {% include "components/navbar.html.jinja"%}
+    <h1 class="text-center">Sign Up</h1>
+
+    {%for message in get_flashed_messages()%}
+        <div class="alert alert-info" role="alert">
+            {{ message }}
+        </div>
+    {%endfor%}
 
 <div class="container-fluid mt-5 col-10">
     <form action="/signup" method="post">
-        <h1 class="text-center">Sign Up</h1>
-        <div class="mb-3">
-            <input name="first_name" type="text" aria-label="First name" placeholder="First Name" class="form-control">
 
-            <input name="last_name" type="text" aria-label="Last name" placeholder="Last Name" class="form-control">
+        <div class="mb-3">
+            <input name="first_name" type="text" aria-label="First name" placeholder="First Name" class="form-control" required value="{{ request.form.get('first_name','')">
+            <input name="last_name" type="text" aria-label="Last name" placeholder="Last Name" class="form-control" required value="{{ request.form.get('last_name','')">
         </div>
         <div class="mb-3">
-            <input name="username" type="text" aria-label="Username" class="form-control">
-
-        </div>
-        <div class="mb-3">
-            <label for="Email1" class="form-label">Email address</label>
-            <input name="email" type="email" class="form-control" id="Email1" aria-describedby="emailHelp">
-            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            <label for="username1" class="form-label">Username</label>
+            <input name="username" type="text" aria-label="Username" class="form-control" required value="{{ request.form.get('username','')">
         </div>
         <div class="mb-3">
             <label for="Password1" class="form-label">Password</label>
-            <input name="password" type="password" class="form-control" id="Password1">
+            <input name="password" type="password" class="form-control" id="Password1" required value="{{ request.form.get('password','')">
         </div>
         <div class="mb-3">
             <label for="Password1" class="form-label">Confirm Password</label>
-            <input name="password" type="password" class="form-control" id="Password1">
+            <input name="password" type="password" class="form-control" id="Password1" >
+        </div>
+        <div class="mb-3">
+            <label for="Email1" class="form-label">Email address</label>
+            <input name="email" type="email" class="form-control" id="Email1" required value="{{ request.form.get('email','')">
+        </div>
+        <div class="mb-3">
+            <label for="address1" class="form-label">Address</label>
+            <input name="address" type="text" class="form-control" id="address1" required value="{{ request.form.get('address','')">
+        </div>
+        <div class="mb-3">
+            <label for="number1" class="form-label">Number</label>
+            <input name="number" type="text" class="form-control" id="number1" required value="{{ request.form.get('number','')">
         </div>
     
         <div class="text-center mt-5">

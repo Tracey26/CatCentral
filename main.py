@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 import pymysql
 from dynaconf import Dynaconf
 
@@ -7,6 +7,8 @@ app = Flask(__name__)
 conf = Dynaconf(
     settings_file = ("settings.toml")
 )
+
+app.secret_key = conf.secret_key
 
 def connect_db():
     conn = pymysql.connect(
@@ -73,20 +75,30 @@ def signup():
         username = request.form["username"]
         address = request.form["address"]
         number = request.form["number"]
+        confirm_password = request.form["confirm_password"]
         
+        if password != confirm_password:
+            flash("Passwords Do NOT Match")
+            return render_template("signup.html.jinja")
+
 
         conn = connect_db()
 
         cursor = conn.cursor()
 
-        cursor.execute("""
-            INSERT INTO `Customer`
-                (`first_name`, `last_name`, `email`,`password`, `username`, `address`, `number`)
-            VALUES
-                ( '{first_name}', '{last_name}', '{email}', '{password}', '{username}');
-        """)
-        cursor.close()
-        return redirect("signin")  
+        try:
+            cursor.execute(f"""
+                INSERT INTO `Customer`
+                    (`first_name`, `last_name`, `email`,`password`, `username`, `address`, `number`)
+                VALUES
+                    ( '{first_name}', '{last_name}', '{email}', '{password}', '{username}', '{address}', '{number}');
+            """)
+        except pymysql.err.IntegrityError:
+            flash("Sorry, that username/email is already in use")
+        else:
+            return redirect("/signin")  
+        finally:
+            cursor.close()
+            conn.close()
+        
     return render_template("signup.html.jinja")
-    cursor.close()
-    conn.close()
