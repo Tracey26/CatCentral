@@ -8,22 +8,26 @@
   </head>
   <body>
     {% include "components/navbar.html.jinja"%}
+
+    <h1 class="text-center mt-3" >Sign In</h1>
+
+    {%for message in get_flashed_messages()%}
+        <div class="alert alert-info" role="alert">
+            {{ message }}
+        </div>
+    {%endfor%}
+
     <div class="container-fluid mt-5 col-10">
-        <form>
-        <h1>Sign In</h1>
+        <form action = "/signin" method = "POST">
         <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            <label for="username1" class="form-label">Username</label>
+            <input type="username" class="form-control" id="username1" aria-describedby="username" name="username">
         </div>
         <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1">
+            <label for= "Password1" class="form-label">Password</label>
+            <input type="password" class="form-control" id="Password1" name="password">
         </div>
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
+
         <div class="text-center mt-5">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>

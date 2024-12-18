@@ -9,12 +9,7 @@
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/browse">Browse</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/signin">Sign In/Sign Up</a>
-        </li>
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             
@@ -36,6 +31,11 @@
         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
       </div>
     </form>
+    {% if current_user.is_authenticated%}
+      hi {{ current_user.username }}
+    {% else %}
+      <a href="/signin" class = "btn btn-outline-secondary ms-2 ">Sign In/Sign Up</a>
+    {% endif %}  
     </div>
   </div>
 </nav>
