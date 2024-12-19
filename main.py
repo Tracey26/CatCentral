@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, abort
 import flask_login
 
 import pymysql
@@ -14,6 +14,7 @@ app.secret_key = conf.secret_key
 
 login_manager= flask_login.LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = '/sign_in'
 
 class User:
     is_authenticated = True
@@ -91,7 +92,8 @@ def product_page(product_id):
     cursor.execute(f"SELECT * FROM `Product` WHERE `id` ={product_id};")
 
     result = cursor.fetchone()
-
+    if result is None:
+        abort(404)
     cursor.close()
     conn.close()
 
@@ -99,45 +101,51 @@ def product_page(product_id):
 
 @app.route("/signin")
 def signin():
-    return render_template("signin.html.jinja")
+    if flask_login.current_user.is_authenticated:
+        return redirect ("/")
+    else:
+        return render_template("signin.html.jinja")
 
 @app.route("/signup",methods=["POST","GET"])
 def signup():
-    if request.method =="POST":
-        first_name = request.form["first_name"]
-        last_name = request.form["last_name"]
-        email = request.form["email"]
-        password = request.form["password"]
-        username = request.form["username"]
-        address = request.form["address"]
-        number = request.form["number"]
-        confirm_password = request.form["confirm_password"]
-        
-        if password != confirm_password:
-            flash("Passwords Do NOT Match")
-            return render_template("signup.html.jinja")
+    if flask_login.current_user.is_authenticated:
+        return redirect ("/")
+    else:
+        if request.method =="POST":
+            first_name = request.form["first_name"]
+            last_name = request.form["last_name"]
+            email = request.form["email"]
+            password = request.form["password"]
+            username = request.form["username"]
+            address = request.form["address"]
+            number = request.form["number"]
+            confirm_password = request.form["confirm_password"]
+            
+            if password != confirm_password:
+                flash("Passwords Do NOT Match")
+                return render_template("signup.html.jinja")
 
 
-        conn = connect_db()
+            conn = connect_db()
 
-        cursor = conn.cursor()
+            cursor = conn.cursor()
 
-        try:
-            cursor.execute(f"""
-                INSERT INTO `Customer`
-                    (`first_name`, `last_name`, `email`,`password`, `username`, `address`, `number`)
-                VALUES
-                    ( '{first_name}', '{last_name}', '{email}', '{password}', '{username}', '{address}', '{number}');
-            """)
-        except pymysql.err.IntegrityError:
-            flash("Sorry, that username/email is already in use")
-        else:
-            return redirect("/signin")  
-        finally:
-            cursor.close()
-            conn.close()
-        
-    return render_template("signup.html.jinja")
+            try:
+                cursor.execute(f"""
+                    INSERT INTO `Customer`
+                        (`first_name`, `last_name`, `email`,`password`, `username`, `address`, `number`)
+                    VALUES
+                        ( '{first_name}', '{last_name}', '{email}', '{password}', '{username}', '{address}', '{number}');
+                """)
+            except pymysql.err.IntegrityError:
+                flash("Sorry, that username/email is already in use")
+            else:
+                return redirect("/signin")  
+            finally:
+                cursor.close()
+                conn.close()
+            
+        return render_template("signup.html.jinja")
 
 @app.route("/signin", methods = ["POST", "GET"])
 def sign_in():
@@ -171,3 +179,9 @@ def sign_in():
 def logout():
     flask_login.logout_user()
     return redirect('/')
+
+@app.route('/cart')
+@flask_login.login_requiered
+def cart():
+    return "cart page"
+
