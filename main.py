@@ -99,6 +99,15 @@ def product_page(product_id):
 
     return render_template("product.html.jinja", products = result)
 
+@app.route("/product/<product_id>/cart", methods = ["POST"])
+@flask_login.login_required
+def add_to_cart(product_id):
+
+
+
+
+    return redirect('/cart')
+
 @app.route("/signin")
 def signin():
     if flask_login.current_user.is_authenticated:
@@ -181,7 +190,7 @@ def logout():
     return redirect('/')
 
 @app.route('/cart')
-@flask_login.login_requiered
+@flask_login.login_required
 def cart():
     return "cart page"
 
