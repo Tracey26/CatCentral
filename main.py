@@ -76,9 +76,9 @@ def product_browse():
     else:
         cursor.execute(f"SELECT * FROM `Product` WHERE `product_name` LIKE '%{query}%' ;")
 
-    results = cursor.fetchall()
+    result = cursor.fetchall()
 
-    return render_template("browse.html.jinja", products = results)
+    return render_template("browse.html.jinja", products = result)
 
     cursor.close()
     conn.close()
@@ -192,5 +192,25 @@ def logout():
 @app.route('/cart')
 @flask_login.login_required
 def cart():
-    return "cart page"
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    customer_id = flask_login.current_user.id
+
+    cursor.execute(f"""SELECT 
+                   `product_name`, 
+                   `price`,
+                    `qty`,
+                   `image_dir`,
+                   `product_id`,
+                   `Cart`.`id` 
+                   FROM `Cart` 
+                   JOIN `Product` ON `product_id` = `Product`.`id` 
+                   WHERE `customer_id` = {customer_id};""")
+
+    results = cursor.fetchall()
+    cursor.close()
+    cursor.close()
+
+    return render_template("cart.html.jinja", products = results)
 
