@@ -209,8 +209,23 @@ def cart():
                    WHERE `customer_id` = {customer_id};""")
 
     results = cursor.fetchall()
+
+    total = 0
+    for products in results: 
+        quantity = products["qty"]
+        price = products["price"]
+        item_total = quantity * price
+        total = item_total + total
+
     cursor.close()
     cursor.close()
 
-    return render_template("cart.html.jinja", products = results)
+    return render_template("cart.html.jinja", products = results, total = total)
+
+@app.route("/cart/<cart_id>/delete", methods = ["POST"])
+def remove_product(cart_id):
+
+    conn = connect.db
+    cursor
+
 
