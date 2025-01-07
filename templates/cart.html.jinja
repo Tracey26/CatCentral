@@ -20,6 +20,8 @@
             <th scope="col">Product</th>
             <th scope="col">Price</th>
             <th scope="col">Total</th>
+            <th scope="col">Qty</th>
+            
             </tr>
         </thead>
         <tbody>
@@ -28,11 +30,36 @@
             <tr>
                 <th scope="row">{{product['id']}}</th>
                 <td>{{product['product_name']}}</td>
-                <td>${{product['price']}}</td>
+                <td>${{"%.2f" |format(product['price'])}}</td>
+                <td>$ {{"%.2f" |format(product['price'] * product['qty'])}}</td>
                 <td>{{product['qty']}}</td>
-                <td>${{product['price']*product['qty']}}</td>
-                <td><button type="button" class="btn btn-danger">Remove</button></td>
+                
+
+
+                <td>
+                  <form id = "updateForm{{product['id']}}" action="/cart/{{product['id']}}/update" method = "post">
+                    <input 
+                      type="number"
+                      class="form-control"
+                      style="width: 80px"
+                      value = "{{product['qty']}}"
+                      min="1"
+                      name="qty"
+                      >
+                  </form>
+                </td>
+
+                
+                <td class="text-center">
+
+                  <button form = "updateForm{{product['id']}}" type="submit" clas="btn btn-primary btn-sm">
+                  </button>
+
+                <form action="/cart/{{product['id']}}/del">
+                  <td><button form= "updateForm{{product['id']}}" type="submit" class="btn btn-danger">Remove</button></td>
+                </form>
             </tr>
+            </td>
 
             {% endfor %}
     </table>

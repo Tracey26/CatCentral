@@ -83,13 +83,13 @@ def product_browse():
     cursor.close()
     conn.close()
 
-@app.route("/product/<product_id>")
-def product_page(product_id):
+@app.route("/product/<id>")
+def product_page(id):
     conn = connect_db()
 
     cursor = conn.cursor()
 
-    cursor.execute(f"SELECT * FROM `Product` WHERE `id` ={product_id};")
+    cursor.execute(f"SELECT * FROM `Product` WHERE `id` ={id};")
 
     result = cursor.fetchone()
     if result is None:
@@ -97,13 +97,24 @@ def product_page(product_id):
     cursor.close()
     conn.close()
 
-    return render_template("product.html.jinja", products = result)
+    return render_template("product.html.jinja", product = result)
 
 @app.route("/product/<product_id>/cart", methods = ["POST"])
 @flask_login.login_required
 def add_to_cart(product_id):
+    qty = request.form['qty']
+    customer_id = flask_login.current_user.id
 
+    conn = connect_db()
 
+    cursor = conn.cursor()
+
+    cursor.execute (f"""
+        INSERT INTO `Cart` (`product_id`), `customer_id`,`qty`)
+        VALUES ({id}, {customer_id}, {qty})
+        ON DUPLICATE KEY UPDATE
+            `qty` = `qty` + {qty}
+    """)
 
 
     return redirect('/cart')
@@ -223,9 +234,36 @@ def cart():
     return render_template("cart.html.jinja", products = results, total = total)
 
 @app.route("/cart/<cart_id>/delete", methods = ["POST"])
-def remove_product(cart_id):
+@flask_login.login_required
+def delete_cart(cart_id):
 
-    conn = connect.db
-    cursor
+    conn = connect_db
+
+    cursor = conn.cursor()
+
+    cursor.execute(f"DELETE FROM `Cart` WHERE `id` = {cart_id};")
+
+    conn.close()
+    cursor.close()
+
+    return redirect('/cart')
 
 
+@app.route("/cart/<cart_id>/delete", methods = ["POST", "GET"])
+@flask_login.login_required
+def update_quantity(cart_id):
+
+    conn=connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute(f"""
+    UPDATE `Cart`
+    SET `cart_id` = {cart_id}
+    WHERE `id` = {id};
+    """)
+
+    cursor.close()
+    conn.close()
+
+    flash ("Updated Successfully")
+    return redirect("/cart")
