@@ -267,3 +267,27 @@ def update_quantity(cart_id):
 
     flash ("Updated Successfully")
     return redirect("/cart")
+
+@app.route('/cart/<id>/checkout' , methods = ["POST","GET"])
+@flask_login.login_required
+def checkout(id):
+
+    conn = connect_db
+    cursor = conn.cursor()
+
+    cursor.execute(f"""SELECT 
+                   `product_name`, 
+                   `price`,
+                    `qty`,
+                   `image_dir`,
+                   `product_id`,
+                   `Cart`.`id` 
+                   FROM `Cart` 
+                   JOIN `Product` ON `product_id` = `Product`.`id` 
+                   WHERE `customer_id` = {id};""")
+
+    results = cursor.fetchone()
+    conn.close()
+    cursor.close()
+
+    return render_template ("checkout.hmtl.jinja",  products = results )
