@@ -77,25 +77,23 @@ def product_browse():
         cursor.execute(f"SELECT * FROM `Product` WHERE `product_name` LIKE '%{query}%' ;")
 
     result = cursor.fetchall()
-
-    return render_template("browse.html.jinja", products = result)
-
     cursor.close()
     conn.close()
 
-@app.route("/product/<id>")
-def product_page(id):
+    return render_template("browse.html.jinja", products = result)
+
+
+@app.route("/product/<product_id>")
+def product_page(product_id):
     conn = connect_db()
 
     cursor = conn.cursor()
 
-    cursor.execute(f"SELECT * FROM `Product` WHERE `id` ={id};")
+    cursor.execute(f"SELECT * FROM `Product` WHERE `id` ={product_id};")
 
     result = cursor.fetchone()
     if result is None:
         abort(404)
-    cursor.close()
-    conn.close()
 
     return render_template("product.html.jinja", product = result)
 
@@ -110,8 +108,8 @@ def add_to_cart(product_id):
     cursor = conn.cursor()
 
     cursor.execute (f"""
-        INSERT INTO `Cart` (`product_id`), `customer_id`,`qty`)
-        VALUES ({id}, {customer_id}, {qty})
+        INSERT INTO `Cart` (`product_id`, `customer_id`,`qty`)
+        VALUES ({product_id}, {customer_id}, {qty})
         ON DUPLICATE KEY UPDATE
             `qty` = `qty` + {qty}
     """)
@@ -270,23 +268,19 @@ def update_quantity(cart_id):
 
 @app.route('/cart/<id>/checkout' , methods = ["POST","GET"])
 @flask_login.login_required
-def checkout(id):
+def checkout():
 
     conn = connect_db
     cursor = conn.cursor()
 
-    cursor.execute(f"""SELECT 
-                   `product_name`, 
-                   `price`,
-                    `qty`,
-                   `image_dir`,
-                   `product_id`,
-                   `Cart`.`id` 
-                   FROM `Cart` 
-                   JOIN `Product` ON `product_id` = `Product`.`id` 
-                   WHERE `customer_id` = {id};""")
+    cursor.execute(f'SELECT * FROM `Cart`')
 
-    results = cursor.fetchone()
+    results = cursor.fetchall()
+
+    cursor.execute(f"""INSERT INTO 'SaleProduct` (`customer_id` , `product_id`, `qty`)
+    VALUES ('{results(1)}', '{results(2)}', '{results(3)}');
+       """)
+
     conn.close()
     cursor.close()
 
