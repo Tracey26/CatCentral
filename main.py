@@ -114,6 +114,8 @@ def add_to_cart(product_id):
             `qty` = `qty` + {qty}
     """)
 
+    conn.close()
+    cursor.close()
 
     return redirect('/cart')
 
@@ -235,7 +237,7 @@ def cart():
 @flask_login.login_required
 def delete_cart(cart_id):
 
-    conn = connect_db
+    conn = connect_db()
 
     cursor = conn.cursor()
 
@@ -247,7 +249,7 @@ def delete_cart(cart_id):
     return redirect('/cart')
 
 
-@app.route("/cart/<cart_id>/delete", methods = ["POST", "GET"])
+@app.route("/cart/<cart_id>/update", methods = ["POST", "GET"])
 @flask_login.login_required
 def update_quantity(cart_id):
 
@@ -256,8 +258,8 @@ def update_quantity(cart_id):
 
     cursor.execute(f"""
     UPDATE `Cart`
-    SET `cart_id` = {cart_id}
-    WHERE `id` = {id};
+    SET `qty` = {cart_id}
+    WHERE `id` = {cart_id};
     """)
 
     cursor.close()
