@@ -287,3 +287,4 @@ def checkout():
     cursor.close()
 
     return render_template ("checkout.hmtl.jinja",  products = results )
+
