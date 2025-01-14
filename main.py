@@ -89,7 +89,7 @@ def product_page(product_id):
 
     cursor = conn.cursor()
 
-    cursor.execute(f"SELECT * FROM `Product` WHERE `id` ={product_id};")
+    cursor.execute(f"SELECT * FROM `Product` WHERE `id` = '{product_id}'")
 
     result = cursor.fetchone()
     if result is None:
@@ -233,7 +233,7 @@ def cart():
 
     return render_template("cart.html.jinja", products = results, total = total)
 
-@app.route("/cart/<cart_id>/delete", methods = ["POST"])
+@app.route("/cart/<cart_id>/delete", methods = ["POST", "GET"])
 @flask_login.login_required
 def delete_cart(cart_id):
 
@@ -288,3 +288,13 @@ def checkout():
 
     return render_template ("checkout.hmtl.jinja",  products = results )
 
+#products = []
+#
+#total = 0
+#for product in products:
+    #price = product['price']
+
+    #total = total + price 
+#count = len(products)
+
+#average = total/count
