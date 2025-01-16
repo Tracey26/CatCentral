@@ -37,7 +37,7 @@
 
 
                 <td>
-                  <form id = "updateForm-{{product['id']}}" action="/cart/{{product['id']}}/update" method = "post">
+                  <form id="updateForm-{{product['id']}}" action="/cart/{{product['id']}}/update" method = "post">
                     <input 
                       type="number"
                       class="form-control"
@@ -48,7 +48,7 @@
                       >
                   </form>
                 </td>
-                <td>${{ product['price']* product['qty']}}</td>
+                <td>${{"%.2f" | format(product['price']* product['qty'])}}</td>
                 
                 <td class="text-center">
                   <button form = "updateForm-{{product['id']}}" type="submit" class="btn btn-primary">Update</button>
@@ -64,7 +64,7 @@
 </div>
 {% endif %}
 
-<h1>{{total}}</h1>
+<h3>${{"%.2f" | format (total)}}</h3>
   <form action="/checkout/" >
   
   </form>

@@ -91,6 +91,11 @@ def product_page(product_id):
 
     cursor.execute(f"SELECT * FROM `Product` WHERE `id` = '{product_id}'")
 
+    #count = len(products)
+
+    #average = total/count
+
+
     result = cursor.fetchone()
     if result is None:
         abort(404)
@@ -256,9 +261,11 @@ def update_quantity(cart_id):
     conn=connect_db()
     cursor = conn.cursor()
 
+    qty=request.form['qty']
+
     cursor.execute(f"""
     UPDATE `Cart`
-    SET `qty` = {cart_id}
+    SET `qty` = {qty}
     WHERE `id` = {cart_id};
     """)
 
@@ -288,13 +295,26 @@ def checkout():
 
     return render_template ("checkout.hmtl.jinja",  products = results )
 
-#products = []
-#
-#total = 0
-#for product in products:
-    #price = product['price']
 
-    #total = total + price 
-#count = len(products)
+@app.route('/product/<product_id>/review', methods = ["POST","GET"])
+def review(product_id):
+    if flask_login.current_user.is_authenticated == False:
+        flash("Sign In First!")
+        return redirect("/login")
+    
+    else:
 
-#average = total/count
+        customer_id = flask_login.current_user.id
+        review_score = request.form['rating']
+        review_text = request.form['review']
+
+        conn = connect_db() 
+        cursor = conn.cursor() 
+        cursor.execute(f"""
+                       INSERT INTO `Review` (`product_id`, `customer_id`, `review_text`,`rating`)
+                       VALUES ('{product_id}', '{customer_id}', '{review_text}', '{review_score}') 
+                       ON DUPLICATE KEY UPDATE `review_text` = '{review_text}', `rating` = {review_score}
+                       """)
+        
+    return redirect(f'/product/{product_id}')
+
