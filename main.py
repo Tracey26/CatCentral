@@ -275,25 +275,61 @@ def update_quantity(cart_id):
     flash ("Updated Successfully")
     return redirect("/cart")
 
-@app.route('/cart/<id>/checkout' , methods = ["POST","GET"])
+@app.route('/checkout', methods = ["POST","GET"])
 @flask_login.login_required
 def checkout():
+    
+    customer_id = flask_login.current_user.id
 
-    conn = connect_db
+    conn = connect_db()
     cursor = conn.cursor()
 
     cursor.execute(f'SELECT * FROM `Cart`')
 
-    results = cursor.fetchall()
+    cart = cursor.fetchall()
 
-    cursor.execute(f"""INSERT INTO 'SaleProduct` (`customer_id` , `product_id`, `qty`)
-    VALUES ('{results(1)}', '{results(2)}', '{results(3)}');
-       """)
+    cursor.execute(f"""
+                   INSERT INTO `Sale` (`customer_id`, `status`)
+                   VALUES ('{customer_id}', 'pending')
+                   """)
+    
+    for product in cart:
+        cursor.execute(f"""
+                       INSERT INTO `SaleProduct` (`sale_id`,`product_id`, `qty`)
+                       VALUES ('{cursor.lastrowid}','{product['product_id']}', '{product['qty']}')
+                       """)
 
-    conn.close()
+    cursor.execute(f"""
+                    DELETE FROM `Cart` WHERE `customer_id` = "{customer_id}";
+                   """)
+    
     cursor.close()
+    conn.close()
 
-    return render_template ("checkout.hmtl.jinja",  products = results )
+    flash("Order Placed")
+
+    return redirect("checkout.html.jinja")
+
+
+# @app.route('/cart/<id>/checkout' , methods = ["POST","GET"])
+# @flask_login.login_required
+# def checkout():
+
+#     conn = connect_db
+#     cursor = conn.cursor()
+
+#     cursor.execute(f'SELECT * FROM `Cart`')
+
+#     results = cursor.fetchall()
+
+#     cursor.execute(f"""INSERT INTO 'SaleProduct` (`customer_id` , `product_id`, `qty`)
+#     VALUES ('{results(1)}', '{results(2)}', '{results(3)}');
+#        """)
+
+#     conn.close()
+#     cursor.close()
+
+#     return render_template ("checkout.hmtl.jinja",  products = results )
 
 
 @app.route('/product/<product_id>/review', methods = ["POST","GET"])
